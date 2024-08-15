@@ -1,49 +1,53 @@
 #!/usr/bin/python3
 """
-Log parsing
+log parsing
 """
 import sys
-import re
-from collections import defaultdict
 
 
-def print_stats(total_size, status_codes):
+def display_metrics(total_bytes: int, code_frequency: dict) -> None:
     """
-    Print the computed statistics.
+    Display the computed metrics.
     """
-    print(f"File size: {total_size}")
-    for code in sorted(status_codes.keys()):
-        if status_codes[code] > 0:
-            print(f"{code}: {status_codes[code]}")
+    print(f"File size: {total_bytes}")
+    for code, frequency in sorted(code_frequency.items()):
+        if frequency > 0:
+            print(f"{code}: {frequency}")
 
 
-def main():
+def process_logs():
     """
-    Main function
+    Main function to process log entries and compute metrics.
     """
-    total_size = 0
-    status_codes = defaultdict(int)
-    line_count = 0
-    pattern = r'^\S+ - \[.*\] "GET /projects/260 HTTP/1.1" (\d+) (\d+)$'
+    total_bytes = 0
+    entry_count = 0
+    valid_codes = ["200", "301", "400", "401", "403", "404", "405", "500"]
+    code_frequency = {code: 0 for code in valid_codes}
 
     try:
-        for line in sys.stdin:
-            line = line.strip()
-            match = re.match(pattern, line)
-            if match:
-                status_code = int(match.group(1))
-                file_size = int(match.group(2))
-                total_size += file_size
-                status_codes[status_code] += 1
-                line_count += 1
+        for log_entry in sys.stdin:
+            entry_count += 1
+            parts = log_entry.split()
 
-                if line_count % 10 == 0:
-                    print_stats(total_size, status_codes)
+            if len(parts) > 2:
+                status = parts[-2]
+                if status in code_frequency:
+                    code_frequency[status] += 1
+
+            try:
+                total_bytes += int(parts[-1])
+            except (IndexError, ValueError):
+                pass
+
+            if entry_count % 10 == 0:
+                display_metrics(total_bytes, code_frequency)
+
+        display_metrics(total_bytes, code_frequency)
 
     except KeyboardInterrupt:
-        print_stats(total_size, status_codes)
-        sys.exit(0)
+        display_metrics(total_bytes, code_frequency)
+        raise
 
 
 if __name__ == "__main__":
-    main()
+    process_logs()
