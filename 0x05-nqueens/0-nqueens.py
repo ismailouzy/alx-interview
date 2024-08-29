@@ -1,65 +1,58 @@
 #!/usr/bin/python3
-"""N Queens solver"""
+"""
+N Queens problem solver
+"""
 import sys
 
 
-def is_valid_move(board, row, col, n):
-    """Check if a queen can be placed on board[row][col]"""
-    # Check this row on left side
-    for i in range(col):
-        if board[row][i] == 1:
-            return False
-
-    # Check upper diagonal on left side
-    for i, j in zip(range(row, -1, -1), range(col, -1, -1)):
-        if board[i][j] == 1:
-            return False
-
-    # Check lower diagonal on left side
-    for i, j in zip(range(row, n, 1), range(col, -1, -1)):
-        if board[i][j] == 1:
-            return False
-
-    return True
-
-
-def solve_queens(board, col, n):
-    """Recursive function to solve N Queens problem"""
-    if col >= n:
+def place_queens(row, n, columns, pos_diag, neg_diag, chess_board):
+    """
+    Recursive function to place queens
+    """
+    if row == n:
         solution = []
-        for i in range(n):
-            for j in range(n):
-                if board[i][j] == 1:
+        for i in range(len(chess_board)):
+            for j in range(len(chess_board[i])):
+                if chess_board[i][j] == 1:
                     solution.append([i, j])
         print(solution)
-        return True
+        return
+    for col in range(n):
+        if col in columns or (row + col) in pos_diag or (row - col) in neg_diag:
+            continue
+        columns.add(col)
+        pos_diag.add(row + col)
+        neg_diag.add(row - col)
+        chess_board[row][col] = 1
+        place_queens(row+1, n, columns, pos_diag, neg_diag, chess_board)
+        columns.remove(col)
+        pos_diag.remove(row + col)
+        neg_diag.remove(row - col)
+        chess_board[row][col] = 0
 
-    for i in range(n):
-        if is_valid_move(board, i, col, n):
-            board[i][col] = 1
-            solve_queens(board, col + 1, n)
-            board[i][col] = 0
 
-
-def queen_solver(n):
-    """Initialize the board and start solving"""
-    board = [[0 for _ in range(n)] for _ in range(n)]
-    solve_queens(board, 0, n)
+def solve_nqueens(n):
+    """
+    Solve the N Queens problem
+    """
+    columns = set()
+    pos_diag = set()
+    neg_diag = set()
+    chess_board = [[0] * n for _ in range(n)]
+    place_queens(0, n, columns, pos_diag, neg_diag, chess_board)
 
 
 if __name__ == "__main__":
-    if len(sys.argv) != 2:
+    args = sys.argv
+    if len(args) != 2:
         print("Usage: nqueens N")
         sys.exit(1)
-
     try:
-        n = int(sys.argv[1])
+        n = int(args[1])
+        if n < 4:
+            print("N must be at least 4")
+            sys.exit(1)
+        solve_nqueens(n)
     except ValueError:
         print("N must be a number")
         sys.exit(1)
-
-    if n < 4:
-        print("N must be at least 4")
-        sys.exit(1)
-
-    queen_solver(n)
