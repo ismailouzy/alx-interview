@@ -1,5 +1,9 @@
-#!/usr/bin/env python3
+#!/usr/bin/python3
+"""
+nqueen
+"""
 import sys
+
 
 def is_safe(board, row, col, n):
 
@@ -17,6 +21,7 @@ def is_safe(board, row, col, n):
 
     return True
 
+
 def solve_nqueens(board, col, n):
     if col >= n:
         print_solution(board, n)
@@ -31,6 +36,7 @@ def solve_nqueens(board, col, n):
 
     return res
 
+
 def print_solution(board, n):
     solution = []
     for i in range(n):
@@ -39,9 +45,11 @@ def print_solution(board, n):
                 solution.append([i, j])
     print(solution)
 
+
 def nqueens(n):
     board = [[0 for _ in range(n)] for _ in range(n)]
     solve_nqueens(board, 0, n)
+
 
 if __name__ == "__main__":
     if len(sys.argv) != 2:
