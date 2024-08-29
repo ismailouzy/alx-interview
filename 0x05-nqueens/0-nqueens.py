@@ -18,8 +18,10 @@ def place_queens(row, n, columns, pos_diag, neg_diag, chess_board):
         print(solution)
         return
     for col in range(n):
-        if col in columns or
-        (row + col) in pos_diag or (row - col) in neg_diag:
+        if (
+                col in columns or
+                (row + col) in pos_diag or
+                (row - col) in neg_diag):
             continue
         columns.add(col)
         pos_diag.add(row + col)
