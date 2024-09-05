@@ -2,39 +2,27 @@
 
 const request = require('request');
 
-if (process.argv.length !== 3) {
-  console.error('Usage: ./0-starwars_characters.js <Movie ID>');
-  process.exit(1);
-}
-
 const movieId = process.argv[2];
-const apiUrl = `https://swapi-api.alx-tools.com/api/films/${movieId}/`;
+const url = `https://swapi-api.alx-tools.com/api/films/${movieId}/`;
 
-request(apiUrl, (error, response, body) => {
+request(url, (error, response, body) => {
   if (error) {
-    console.error('Error:', error);
+    console.error('Error fetching data from API:', error);
     return;
   }
 
-  if (response.statusCode !== 200) {
-    console.error('Invalid status code:', response.statusCode);
-    return;
-  }
+  const data = JSON.parse(body);
+  const characters = data.characters;
 
-  const movie = JSON.parse(body);
-  const characterUrls = movie.characters;
+  characters.forEach(characterUrl => {
+    request(characterUrl, (error, response, body) => {
+      if (error) {
+        console.error('Error fetching character data:', error);
+        return;
+      }
 
-  const fetchCharacter = (url) => {
-    return new Promise((resolve, reject) => {
-      request(url, (error, response, body) => {
-        if (error) reject(error);
-        else if (response.statusCode !== 200) reject(new Error(`Invalid status code: ${response.statusCode}`));
-        else resolve(JSON.parse(body).name);
-      });
+      const characterData = JSON.parse(body);
+      console.log(characterData.name);
     });
-  };
-
-  Promise.all(characterUrls.map(fetchCharacter))
-    .then(characters => characters.forEach(name => console.log(name)))
-    .catch(error => console.error('Error:', error));
+  });
 });
