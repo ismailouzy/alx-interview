@@ -1,38 +1,36 @@
 #!/usr/bin/python3
-"""
-This module contains the solution for the Prime Game problem.
-"""
 
+def is_prime(n):
+    """Returns True if n is prime, else False."""
+    if n < 2:
+        return False
+    for i in range(2, int(n**0.5) + 1):
+        if n % i == 0:
+            return False
+    return True
+
+def prime_count(n):
+    """Returns the count of prime numbers from 1 to n."""
+    return [i for i in range(2, n + 1) if is_prime(i)]
 
 def isWinner(x, nums):
-    """
-    Determine the winner of the Prime Game for multiple rounds.
-    """
-    def sieve_of_eratosthenes(n):
-        """
-        Generate a list of prime numbers up to n using the Sieve of Eratosthenes.
-        """
-        primes = [True] * (n + 1)
-        primes[0] = primes[1] = False
-        for i in range(2, int(n**0.5) + 1):
-            if primes[i]:
-                for j in range(i*i, n + 1, i):
-                    primes[j] = False
-        return primes
+    """Determines the overall winner after x rounds."""
+    maria_wins = 0
+    ben_wins = 0
 
-    def play_game(n):
-        """
-        Simulate a single game of the Prime Game.
-        """
-        primes = sieve_of_eratosthenes(n)
-        prime_count = sum(primes)
-        return prime_count % 2 == 1  # Maria wins if there are an odd number of primes
+    for n in nums:
+        primes = prime_count(n)
+        turn = 0  # 0 for Maria, 1 for Ben
 
-    if not nums or x != len(nums):
-        return None
+        while primes:
+            prime = primes[0]
+            primes = [p for p in primes if p % prime != 0]
+            turn ^= 1  # Switch turns
 
-    maria_wins = sum(play_game(n) for n in nums)
-    ben_wins = x - maria_wins
+        if turn == 0:
+            ben_wins += 1
+        else:
+            maria_wins += 1
 
     if maria_wins > ben_wins:
         return "Maria"
@@ -40,3 +38,4 @@ def isWinner(x, nums):
         return "Ben"
     else:
         return None
+
