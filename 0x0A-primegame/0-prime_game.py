@@ -25,12 +25,8 @@ def isWinner(x, nums):
         Simulate a single game of the Prime Game.
         """
         primes = sieve_of_eratosthenes(n)
-        dp = [False] * (n + 1)
-        for i in range(2, n + 1):
-            if primes[i]:
-                for j in range(i, n + 1, i):
-                    dp[j] = not dp[j - i]
-        return dp[n]
+        prime_count = sum(primes)
+        return prime_count % 2 == 1  # Maria wins if there are an odd number of primes
 
     if not nums or x != len(nums):
         return None
