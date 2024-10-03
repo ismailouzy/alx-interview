@@ -1,4 +1,8 @@
 #!/usr/bin/python3
+"""
+the solution for the Prime Game problem.
+"""
+
 
 def is_prime(n):
     """Returns True if n is prime, else False."""
@@ -9,9 +13,11 @@ def is_prime(n):
             return False
     return True
 
+
 def prime_count(n):
     """Returns the count of prime numbers from 1 to n."""
     return [i for i in range(2, n + 1) if is_prime(i)]
+
 
 def isWinner(x, nums):
     """Determines the overall winner after x rounds."""
@@ -38,4 +44,3 @@ def isWinner(x, nums):
         return "Ben"
     else:
         return None
-
